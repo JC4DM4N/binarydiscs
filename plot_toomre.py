@@ -27,14 +27,14 @@ for i,file in enumerate(files):
 
 plt.figure('Q')
 plt.ylim([0,10])
-plt.xlim([0,100])
+plt.xlim([0,150])
 plt.title('Toomre, Q, vs rad')
 plt.legend()
 plt.grid(alpha=0.25)
 
 plt.figure('T')
 plt.ylim([0,100])
-plt.xlim([0,100])
+plt.xlim([0,150])
 plt.title('Temp vs rad')
 plt.legend()
 plt.grid(alpha=0.25)

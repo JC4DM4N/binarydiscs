@@ -22,6 +22,7 @@ utime = disc.units['utime'] #s
 #uerg = umass*udist**2/utime**2 #erg
 uerg = udist**2/utime**2 # erg
 uvel = udist/utime
+yr = utime/60./60./24./365.25
 
 #Calculate temperatures from thermal energies
 kB = 1.38064852e-16    #erg / K
@@ -35,16 +36,17 @@ spsound = np.sqrt(gamma*(gamma-1)*disc.utherm*uerg) # from phantom discplot.f90
 
 # want to azimuthally average disc temp and Q, so I can plot T and Q vs Rad
 nbins = 4*disc.npart**(1./3.) + 1
+#nbins = 151
 rmax = 150
-rmin = 1
+rmin = 0
 # bin particles into radius bins
 radbins = np.linspace(rmin, rmax, nbins)
-# radial distances from phantom dumps
-rads = np.sqrt(disc.xyzh[0]**2 + disc.xyzh[1]**2)
+# radial distances from phantom dumps - these need to be centred on ptmass[0]
+rads = np.sqrt((disc.xyzh[0]-disc.ptmass_xyzmh[0,0])**2 + (disc.xyzh[1]-disc.ptmass_xyzmh[1,0])**2)
 
 outfile = open('temp_Q_vs_rad_%s.dat' %file[-3:], 'w')
 # want header of current time in simulation
-outfile.write('%s \n' %disc.time)
+outfile.write('%s \n' %(disc.time*yr))
 for ibin,rad, in enumerate(radbins):
     if ibin==0:
         continue
@@ -53,13 +55,13 @@ for ibin,rad, in enumerate(radbins):
     # also only want midplane particles (with z < H)
     omega = np.sqrt(mstar/rad**3)
     H = spsound/omega
-    wanted = wanted & (np.abs(disc.xyzh[2])<=H)
+    wanted = wanted & (np.abs(disc.xyzh[2]-disc.ptmass_xyzmh[2,0])<=H)
     try:
         #calc mean temperature
         temp = np.mean(temps[wanted])
         # calc Q
-        rho = disc.massofgas/disc.xyzh[3,wanted]**3
-        sigma = np.mean(rho*2*disc.xyzh[3,wanted])
+        rho = disc.massofgas/np.abs(disc.xyzh[3,wanted])**3 # need to double check this is definitely density
+        sigma = np.mean(rho*2*H[wanted]) # sigma = rho*2H
         cs = np.mean(spsound[wanted])
         toomre = cs*omega/np.pi/sigma
 
