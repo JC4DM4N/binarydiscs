@@ -136,7 +136,11 @@ def create_binary_separation_file(dir,out_dirname):
     dumpfiles = sorted(dumpfiles)
 
     for dump in dumpfiles:
-        disc = read_dump_file(os.path.join(dir,dump))
+        try:
+            disc = read_dump_file(os.path.join(dir,dump))
+        except Exception as e:
+            print('failed to load dumpfile: %s' %os.path.join(dir,dump))
+            continue
         ptmass_xyzmh = disc.ptmass_xyzmh
         # only want to calculate anything if there's 2 stars
         if ptmass_xyzmh.shape[1] == 2:
