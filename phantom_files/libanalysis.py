@@ -1,3 +1,3 @@
 import sys
-sys.path.insert(0, '/Users/s1863104/Documents/phd/programs/phantom//scripts/pyphantom/')
+sys.path.insert(0, '../../../programs/phantom/scripts/pyphantom/')
 from phantomanalysis import PhantomAnalysis
