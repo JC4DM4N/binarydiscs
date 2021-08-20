@@ -122,23 +122,31 @@ def bin_azimuthally(rads,vals,nbins=100,rmax=100):
 
     return rad_bins,binned_vals
 
-def create_binary_separation_file(dir):
-    sepfile = open(os.path.join(dir,'binsep.dat'), 'w')
-    posfile = open(os.path.join(dir,'ptmass_xyz.dat'), 'w')
+def create_binary_separation_file(dir,out_dirname):
 
-    dumpfiles = sorted([file for file in os.listdir(dir) if 'sgdisc_00' in file])
+    dir_id = dir.split('../')[1].replace('/','_').replace('.','')
+
+    sepfile = open(os.path.join(out_dirname,dir_id+'_binsep.dat'), 'w')
+    posfile = open(os.path.join(out_dirname,dir_id+'_ptmass_xyz.dat'), 'w')
+
+    dumpfiles = [file for file in os.listdir(dir) if 'sgdisc_00' in file]
     # exclude ascii or temp files
-    dumpfiles = [file for file in dumpfiles if '.tmp' not in file]
-    dumpfiles = [file for file in dumpfiles if '.ascii' not in file]
+    unwanted_extensions = ['.png','.dat','.tmp','.ascii']
+    dumpfiles = [dump for dump in dumpfiles if not any([dump.endswith(ext) for ext in unwanted_extensions])]
+    dumpfiles = sorted(dumpfiles)
 
     for dump in dumpfiles:
-        disc = read_dump_file(dump)
+        disc = read_dump_file(os.path.join(dir,dump))
         ptmass_xyzmh = disc.ptmass_xyzmh
-        binsep = (ptmass_xyzmh[0,0]-ptmass_xyzmh[0,1])**2 + (ptmass_xyzmh[1,0]-ptmass_xyzmh[1,1])**2 + (ptmass_xyzmh[2,0]-ptmass_xyzmh[2,1])**2
-        binsep = binsep**0.5
-        sepfile.write('%s %s %s \n' %(ifile, disc.time, binsep))
-        posfile.write('%s %s %s %s %s %s \n' %(ptmass_xyzmh[0,0],ptmass_xyzmh[1,0],ptmass_xyzmh[2,0],
-                                               ptmass_xyzmh[0,1],ptmass_xyzmh[1,1],ptmass_xyzmh[2,1],))
+        # only want to calculate anything if there's 2 stars
+        if ptmass_xyzmh.shape[1] == 2:
+            binsep = (ptmass_xyzmh[0,0]-ptmass_xyzmh[0,1])**2 + (ptmass_xyzmh[1,0]-ptmass_xyzmh[1,1])**2 + (ptmass_xyzmh[2,0]-ptmass_xyzmh[2,1])**2
+            binsep = binsep**0.5
+            # file id
+            ifile = dump.split('sgdisc_')[1].strip('0')
+            sepfile.write('%s %s %s \n' %(ifile, disc.time, binsep))
+            posfile.write('%s %s %s %s %s %s \n' %(ptmass_xyzmh[0,0],ptmass_xyzmh[1,0],ptmass_xyzmh[2,0],
+                                                   ptmass_xyzmh[0,1],ptmass_xyzmh[1,1],ptmass_xyzmh[2,1],))
 
     sepfile.close()
     posfile.close()
