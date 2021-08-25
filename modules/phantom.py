@@ -11,9 +11,26 @@ def read_dump_file(input_file):
     disc = pa(input_file)
     return disc
 
+def folder_id(dir):
+    return dir.split('../')[1].replace('/','_').replace('.','')
+
 def collect_all_dumps(parent_dir='..'):
     all_dumps = [os.path.join(r,f) for r,d,files in os.walk(parent_dir) for f in files if 'sgdisc_' in f]
+    unwanted_extensions = ['.png','.dat','.tmp','.ascii']
+    all_dumps = [dump for dump in all_dumps if not any([dump.endswith(ext) for ext in unwanted_extensions])]
     return all_dumps
+
+def collect_all_final_dumps(parent_dir='..'):
+    all_final_dumps = []
+    unwanted_extensions = ['.png','.dat','.tmp','.ascii']
+    for r,d,files in os.walk('..'):
+        all_dumps = [os.path.join(r,f) for f in files if 'sgdisc_' in f]
+        all_dumps = [dump for dump in all_dumps if not any([dump.endswith(ext) for ext in unwanted_extensions])]
+        # also don't want any dumps from the 'extra_dumps' subfolders
+        all_dumps = [dump for dump in all_dumps if 'extra' not in dump]
+        if all_dumps:
+            all_final_dumps.append(sorted(all_dumps)[-1])
+    return all_final_dumps
 
 def edit_splash_limits(disc):
     # plots +/- 150au around the star
@@ -124,7 +141,7 @@ def bin_azimuthally(rads,vals,nbins=100,rmax=100):
 
 def create_binary_separation_file(dir,out_dirname):
 
-    dir_id = dir.split('../')[1].replace('/','_').replace('.','')
+    dir_id = folder_id(dir)
 
     sepfile = open(os.path.join(out_dirname,dir_id+'_binsep.dat'), 'w')
     posfile = open(os.path.join(out_dirname,dir_id+'_ptmass_xyz.dat'), 'w')
@@ -147,7 +164,7 @@ def create_binary_separation_file(dir,out_dirname):
             binsep = (ptmass_xyzmh[0,0]-ptmass_xyzmh[0,1])**2 + (ptmass_xyzmh[1,0]-ptmass_xyzmh[1,1])**2 + (ptmass_xyzmh[2,0]-ptmass_xyzmh[2,1])**2
             binsep = binsep**0.5
             # file id
-            ifile = dump.split('sgdisc_')[1].strip('0')
+            ifile = dump.split('sgdisc_')[1].lstrip('0')
             sepfile.write('%s %s %s \n' %(ifile, disc.time, binsep))
             posfile.write('%s %s %s %s %s %s \n' %(ptmass_xyzmh[0,0],ptmass_xyzmh[1,0],ptmass_xyzmh[2,0],
                                                    ptmass_xyzmh[0,1],ptmass_xyzmh[1,1],ptmass_xyzmh[2,1],))
