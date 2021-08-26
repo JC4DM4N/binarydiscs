@@ -77,7 +77,6 @@ DEFAULT_SPLASH_OUTPUT_FILE = 'splash.png'
 
 def generate_png_plot(input_file,output_file=DEFAULT_SPLASH_OUTPUT_FILE):
 
-    print(input_file)
     input_dir = os.path.dirname(input_file)
 
     if os.path.exists(os.path.join(input_dir,'splash.limits')):
@@ -171,3 +170,65 @@ def create_binary_separation_file(dir,out_dirname):
 
     sepfile.close()
     posfile.close()
+
+def get_az_averaged_properties(disc,nbins=100,rmax=100):
+
+    radii = np.sqrt(
+             (disc.xyzh[0]-disc.ptmass_xyzmh[0,0])**2 +
+             (disc.xyzh[1]-disc.ptmass_xyzmh[1,0])**2 +
+             (disc.xyzh[2]-disc.ptmass_xyzmh[2,0])**2
+            )
+
+    rad_bins = np.linspace(0,rmax,nbins)
+    ibins = np.digitize(radii,rad_bins)
+
+    #Calculate temperatures from thermal energies
+    kB = 1.38064852e-16    #erg / K
+    mH = 1.6735575e-24    #grams
+    gmw = 2.381           #mean mass taken from Phantom
+    gamma = 5./3.         #barotropic index (NEED TO DOUBLE CHECK THIS)
+    mstar = 1
+    G = 6.67430e-8        # cgs grav constant
+
+    out = {'r' : [],
+           'npart': [],
+           'omega': [],
+           'temp': [],
+           'sigma': [],
+           'cs': [],
+           'toomre': [],
+           'utherm': []
+          }
+
+    for i,rad in enumerate(rad_bins):
+        # surface area of this radial bin
+        bin_area = np.pi*(rad_bins[i]**2 - rad_bins[i-1]**2)
+        bin_area_cgs = bin_area*units['udist']*units['udist']
+        # mask for particles in this bin
+        inbin = ibins==i
+        # epicyclic frequency at this radial bin
+        omega_cgs = np.sqrt(G*mstar*units['umass']/(rad*units['udist'])**3)
+        # only want particles in disc midplane, defined as within 1AU of center
+        midplane_mask = abs(disc.xyzh[2]-disc.ptmass_xyzmh[2,0])*units['udist'] < units['udist']
+        wanted = inbin & midplane_mask
+        # calc mean temperature, from phantom eos.f90
+        temp_cgs = np.mean(mH*gmw*(gamma-1)*disc.utherm[wanted]*units['uerg']/kB)
+        # density within this bin, from splash read_data_sphNG.f90
+        rho_cgs = disc.massofgas*units['umass']/np.abs((disc.hfact/disc.xyzh[3,wanted])*units['udist'])**3
+        sigma_cgs = np.sum(inbin)*disc.massofgas*units['umass']/bin_area_cgs
+        # cs = RMS cs within annulus
+        spsound2_cgs = gamma*(gamma-1)*disc.utherm*units['uerg'] # from phantom discplot.f90
+        cs_cgs = np.sqrt(np.mean(spsound2_cgs[wanted]))
+        # calc Q
+        toomre = cs_cgs*omega_cgs/np.pi/sigma_cgs/G
+
+        out['r'].append(rad)
+        out['npart'].append(np.sum(wanted))
+        out['omega'].append(omega_cgs)
+        out['temp'].append(temp_cgs)
+        out['sigma'].append(sigma_cgs)
+        out['cs'].append(cs_cgs)
+        out['toomre'].append(toomre)
+        out['utherm'].append(np.mean(disc.utherm[wanted]))
+
+    return out
