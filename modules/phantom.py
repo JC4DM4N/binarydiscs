@@ -7,6 +7,20 @@ import subprocess
 sys.path.insert(0,'../phantom_files')
 from libanalysis import PhantomAnalysis as pa
 
+def get_units():
+    units = {
+        'udens' : 5.94103125029151e-07,
+        'umass' : 1.9891e+33,
+        'udist' : 14960000000000.0,
+        'utime' : 5022728.790082334,
+        'uerg' : 8871227776136.363,
+        'uvel' : 2978460.6386750126,
+        'yr' : 0.1591606709661804
+        }
+    return units
+
+UNITS = get_units()
+
 def read_dump_file(input_file):
     disc = pa(input_file)
     return disc
@@ -110,18 +124,6 @@ def display_splash_plot(image_file):
     plt.yticks([])
     plt.show()
 
-def get_units():
-    units = {
-        'udens' : 5.94103125029151e-07,
-        'umass' : 1.9891e+33,
-        'udist' : 14960000000000.0,
-        'utime' : 5022728.790082334,
-        'uerg' : 8871227776136.363,
-        'uvel' : 2978460.6386750126,
-        'yr' : 0.1591606709661804
-        }
-    return units
-
 def get_midplane_mask(disc):
     # get particles within 1 scale height of disc midplane (if z < H)
     mask = abs(disc.xyzh[2] - disc.ptmass_xyzmh[2,0]) <= abs(disc.xyzh[3])
@@ -175,8 +177,7 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
 
     radii = np.sqrt(
              (disc.xyzh[0]-disc.ptmass_xyzmh[0,0])**2 +
-             (disc.xyzh[1]-disc.ptmass_xyzmh[1,0])**2 +
-             (disc.xyzh[2]-disc.ptmass_xyzmh[2,0])**2
+             (disc.xyzh[1]-disc.ptmass_xyzmh[1,0])**2
             )
 
     rad_bins = np.linspace(0,rmax,nbins)
@@ -186,7 +187,7 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
     kB = 1.38064852e-16    #erg / K
     mH = 1.6735575e-24    #grams
     gmw = 2.381           #mean mass taken from Phantom
-    gamma = 5./3.         #barotropic index (NEED TO DOUBLE CHECK THIS)
+    gamma = 5./3.         #barotropic index
     mstar = 1
     G = 6.67430e-8        # cgs grav constant
 
@@ -203,21 +204,23 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
     for i,rad in enumerate(rad_bins):
         # surface area of this radial bin
         bin_area = np.pi*(rad_bins[i]**2 - rad_bins[i-1]**2)
-        bin_area_cgs = bin_area*units['udist']*units['udist']
+        bin_area_cgs = bin_area*UNITS['udist']*UNITS['udist']
         # mask for particles in this bin
         inbin = ibins==i
         # epicyclic frequency at this radial bin
-        omega_cgs = np.sqrt(G*mstar*units['umass']/(rad*units['udist'])**3)
+        omega_cgs = np.sqrt(G*mstar*UNITS['umass']/(rad*UNITS['udist'])**3)
         # only want particles in disc midplane, defined as within 1AU of center
-        midplane_mask = abs(disc.xyzh[2]-disc.ptmass_xyzmh[2,0])*units['udist'] < units['udist']
-        wanted = inbin & midplane_mask
+        midplane_mask = abs(disc.xyzh[2]-disc.ptmass_xyzmh[2,0])*UNITS['udist'] < UNITS['udist']
+        # don't want any particles with h < 0
+        h_mask = disc.xyzh[3] > 0
+        wanted = inbin & midplane_mask & h_mask
         # calc mean temperature, from phantom eos.f90
-        temp_cgs = np.mean(mH*gmw*(gamma-1)*disc.utherm[wanted]*units['uerg']/kB)
+        temp_cgs = np.mean(mH*gmw*(gamma-1)*disc.utherm[wanted]*UNITS['uerg']/kB)
         # density within this bin, from splash read_data_sphNG.f90
-        rho_cgs = disc.massofgas*units['umass']/np.abs((disc.hfact/disc.xyzh[3,wanted])*units['udist'])**3
-        sigma_cgs = np.sum(inbin)*disc.massofgas*units['umass']/bin_area_cgs
+        rho_cgs = disc.massofgas*UNITS['umass']/np.abs((disc.hfact/disc.xyzh[3,wanted])*UNITS['udist'])**3
+        sigma_cgs = np.sum(wanted)*disc.massofgas*UNITS['umass']/bin_area_cgs
         # cs = RMS cs within annulus
-        spsound2_cgs = gamma*(gamma-1)*disc.utherm*units['uerg'] # from phantom discplot.f90
+        spsound2_cgs = gamma*(gamma-1)*disc.utherm*UNITS['uerg'] # from phantom discplot.f90
         cs_cgs = np.sqrt(np.mean(spsound2_cgs[wanted]))
         # calc Q
         toomre = cs_cgs*omega_cgs/np.pi/sigma_cgs/G
@@ -229,6 +232,6 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
         out['sigma'].append(sigma_cgs)
         out['cs'].append(cs_cgs)
         out['toomre'].append(toomre)
-        out['utherm'].append(np.mean(disc.utherm[wanted]))
+        out['utherm'].append(np.mean(disc.utherm[wanted])*UNITS['uerg'])
 
     return out
