@@ -235,3 +235,110 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
         out['utherm'].append(np.mean(disc.utherm[wanted])*UNITS['uerg'])
 
     return out
+
+def generate_u_udot_file(dump,outfile):
+
+    # make temporary directory for running all this from
+    td = 'tempdir'
+    if os.path.exists(td):
+        subprocess.call(['rm','-r',td])
+    os.mkdir(td)
+
+    # this will be "sgdisc_00..."
+    dump_id = dump.split('/')[-1]
+    # copy required files to tempdir
+    shutil.copyfile('../phantom_files/sgdisc.in',os.path.join(td,'sgdisc.in'))
+    shutil.copyfile('../phantom_files/phantom',os.path.join(td,'phantom'))
+    shutil.copyfile('../phantom_files/myeos.dat',os.path.join(td,'myeos.dat'))
+    shutil.copyfile(dump,os.path.join(td,dump_id))
+
+    # edit sgdisc.in file to contain reference to correct dump
+    infile = np.genfromtxt(os.path.join(td,'sgdisc.in'),dtype=str, delimiter='1,234jdks')
+    new_string = 'dumpfile = ' + str(dump_id)
+    infile = [new_string if 'dumpfile' in row else row for row in infile]
+    np.savetxt(os.path.join(td,'sgdisc.in'),infile,fmt="%s")
+
+    # change directory to tempdir for running phantom
+    os.chdir(td)
+    # allow permission to execute phantom
+    subprocess.call(['chmod', 'a+x', 'phantom'])
+    # all files now in place, run phantom
+    subprocess.call(['./phantom','sgdisc.in'])
+    # move generated file to output directory
+    shutil.move('u_and_udot.dat',os.path.join('..',outfile))
+
+    os.chdir('..')
+    subprocess.call(['rm','-r',td])
+
+    return
+
+def read_u_udot_file(infile):
+
+    data = np.genfromtxt(infile,dtype=float)
+
+    out = {
+        'x': data[:,0],
+        'y': data[:,1],
+        'z': data[:,2],
+        'h': data[:,3],
+        'u': data[:,4],
+        'uequil': data[:,5],
+        'ttherm': data[:,6],
+        'ptmass_x': data[:,7][0],
+        'ptmass_y': data[:,8][0],
+        'ptmass_z': data[:,9][0],
+        'dudt': data[:,10],
+        'dudiff': data[:,11]
+    }
+
+    return out
+
+def get_az_averaged_u_udot(results_dict,nbins=100,rmax=100):
+
+    radii = np.sqrt(
+        (results_dict['x'] - results_dict['ptmass_x'])**2 +
+        (results_dict['y'] - results_dict['ptmass_y'])**2
+    )
+
+    rad_bins = np.linspace(0,rmax,nbins)
+    ibins = np.digitize(radii,rad_bins)
+
+    units = phantom.get_units()
+
+    #Calculate temperatures from thermal energies
+    mstar = 1
+    G = 6.67430e-8        # cgs grav constant
+
+    out = {'r' : [],
+       'u': [],
+       'udot': [],
+       'tcool': [],
+       'beta': []
+      }
+
+    for i,rad in enumerate(rad_bins):
+
+        # mask for particles in this radial bin
+        inbin = ibins==i
+        # only want particles in disc midplane, defined as within 1AU of center
+        midplane_mask = np.abs(results_dict['z']-results_dict['ptmass_z']) < 1
+        # only want particles with h>0
+        h_mask = results_dict['h'] > 0
+        # the mask
+        wanted = h_mask & inbin & midplane_mask
+
+        # epicyclic frequency at this radial bin
+        omega_cgs = np.sqrt(G*mstar*units['umass']/(rad*units['udist'])**3)
+
+        u = np.mean(results_dict['u'][wanted])
+        #udot = (results_dict['uequil'][wanted] - results_dict['u'][wanted])/results_dict['ttherm'][wanted]
+        udot = np.mean(results_dict['dudt'][wanted])
+        tcool = u/udot
+
+        out['r'].append(rad)
+        out['u'].append(u)
+        out['udot'].append(udot)
+        out['tcool'].append(tcool)
+        out['beta'].append(omega_cgs*tcool)
+
+    return out
