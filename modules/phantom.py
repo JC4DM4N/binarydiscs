@@ -352,8 +352,6 @@ def get_az_averaged_u_udot(results_dict,nbins=100,rmax=100):
     rad_bins = np.linspace(0,rmax,nbins)
     ibins = np.digitize(radii,rad_bins)
 
-    units = phantom.get_units()
-
     #Calculate temperatures from thermal energies
     mstar = 1
     G = 6.67430e-8        # cgs grav constant
@@ -366,7 +364,6 @@ def get_az_averaged_u_udot(results_dict,nbins=100,rmax=100):
       }
 
     for i,rad in enumerate(rad_bins):
-
         # mask for particles in this radial bin
         inbin = ibins==i
         # only want particles in disc midplane, defined as within 1AU of center
@@ -375,14 +372,13 @@ def get_az_averaged_u_udot(results_dict,nbins=100,rmax=100):
         h_mask = results_dict['h'] > 0
         # the mask
         wanted = h_mask & inbin & midplane_mask
-
         # epicyclic frequency at this radial bin
-        omega_cgs = np.sqrt(G*mstar*units['umass']/(rad*units['udist'])**3)
-
+        omega_cgs = np.sqrt(G*mstar*UNITS['umass']/(rad*UNITS['udist'])**3)
         u = np.mean(results_dict['u'][wanted])
         #udot = (results_dict['uequil'][wanted] - results_dict['u'][wanted])/results_dict['ttherm'][wanted]
         udot = np.mean(results_dict['dudt'][wanted])
         tcool = u/udot
+        tcool = np.mean(results_dict['u'][wanted]/results_dict['dudt'][wanted])
 
         out['r'].append(rad)
         out['u'].append(u)
