@@ -3,7 +3,6 @@ Run phantom for all dump files on disk to generate u and du/dt datafiles.
 Ensure debugging code in force.F90 is enabled, otherwise the datafile will not 
 	be written.
 """
-
 import sys
 import os
 import datetime as dt
