@@ -1,3 +1,7 @@
+"""
+Generate datafiles which report the distance between the two binary stars throughout the
+	duration of a simulation, for all directories found to have dumpfiles.
+"""
 import sys
 import os
 import numpy as np
