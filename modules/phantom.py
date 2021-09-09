@@ -6,6 +6,7 @@ import shutil
 import subprocess
 sys.path.insert(0,'../phantom_files')
 from libanalysis import PhantomAnalysis as pa
+import cooling
 
 def get_units():
     """
@@ -233,6 +234,7 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
            'omega': [],
            'temp': [],
            'sigma': [],
+           'rho': [],
            'cs': [],
            'toomre': [],
            'utherm': []
@@ -246,15 +248,19 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
         inbin = ibins==i
         # epicyclic frequency at this radial bin
         omega_cgs = np.sqrt(G*mstar*UNITS['umass']/(rad*UNITS['udist'])**3)
+        # initial sound speed calculation, to determine the scale height
+        spsound2_cgs = gamma*(gamma-1)*disc.utherm*UNITS['uerg'] # from phantom discplot.f90
+        cs_cgs = np.sqrt(np.mean(spsound2_cgs))
+        H = cs_cgs/omega_cgs
         # only want particles in disc midplane, defined as within 1AU of center
-        midplane_mask = abs(disc.xyzh[2]-disc.ptmass_xyzmh[2,0])*UNITS['udist'] < UNITS['udist']
+        midplane_mask = abs(disc.xyzh[2]-disc.ptmass_xyzmh[2,0])*UNITS['udist'] < H
         # don't want any particles with h < 0
         h_mask = disc.xyzh[3] > 0
         wanted = inbin & midplane_mask & h_mask
         # calc mean temperature, from phantom eos.f90
         temp_cgs = np.mean(mH*gmw*(gamma-1)*disc.utherm[wanted]*UNITS['uerg']/kB)
         # density within this bin, from splash read_data_sphNG.f90
-        rho_cgs = disc.massofgas*UNITS['umass']/np.abs((disc.hfact/disc.xyzh[3,wanted])*UNITS['udist'])**3
+        rho_cgs = np.sum(disc.massofgas*UNITS['umass']*(disc.hfact/(np.abs(disc.xyzh[3,wanted]*UNITS['udist']))**3))
         sigma_cgs = np.sum(wanted)*disc.massofgas*UNITS['umass']/bin_area_cgs
         # cs = RMS cs within annulus
         spsound2_cgs = gamma*(gamma-1)*disc.utherm*UNITS['uerg'] # from phantom discplot.f90
@@ -267,9 +273,14 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
         out['omega'].append(omega_cgs)
         out['temp'].append(temp_cgs)
         out['sigma'].append(sigma_cgs)
+        out['rho'].append(rho_cgs)
         out['cs'].append(cs_cgs)
         out['toomre'].append(toomre)
         out['utherm'].append(np.mean(disc.utherm[wanted])*UNITS['uerg'])
+
+    # also calc tcool and beta here, which needs calculating separately
+    out['tcool'] = cooling.polytropic_cooling(out,verbose=False)
+    out['beta'] = np.asarray(out['tcool'])*np.asarray(out['omega'])
 
     return out
 
@@ -356,12 +367,13 @@ def get_az_averaged_u_udot(results_dict,nbins=100,rmax=100):
     mstar = 1
     G = 6.67430e-8        # cgs grav constant
 
-    out = {'r' : [],
-       'u': [],
-       'udot': [],
-       'tcool': [],
-       'beta': []
-      }
+    out = {
+           'r' : [],
+           'u': [],
+           'udot': [],
+           'tcool': [],
+           'beta': []
+          }
 
     for i,rad in enumerate(rad_bins):
         # mask for particles in this radial bin
@@ -377,8 +389,7 @@ def get_az_averaged_u_udot(results_dict,nbins=100,rmax=100):
         u = np.mean(results_dict['u'][wanted])
         #udot = (results_dict['uequil'][wanted] - results_dict['u'][wanted])/results_dict['ttherm'][wanted]
         udot = np.mean(results_dict['dudt'][wanted])
-        tcool = u/udot
-        tcool = np.mean(results_dict['u'][wanted]/results_dict['dudt'][wanted])
+        tcool = UNITS['utime']*u/udot
 
         out['r'].append(rad)
         out['u'].append(u)
