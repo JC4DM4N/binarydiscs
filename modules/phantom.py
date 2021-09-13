@@ -279,8 +279,9 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
         out['utherm'].append(np.mean(disc.utherm[wanted])*UNITS['uerg'])
 
     # also calc tcool and beta here, which needs calculating separately
-    out['tcool'] = cooling.polytropic_cooling(out,verbose=False)
-    out['beta'] = np.asarray(out['tcool'])*np.asarray(out['omega'])
+    tcool = np.asarray(cooling.polytropic_cooling(out,verbose=False))
+    out['tcool'] = tcool/60./60./24./365.25
+    out['beta'] = tcool*np.asarray(out['omega'])
 
     return out
 
