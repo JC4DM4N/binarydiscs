@@ -237,7 +237,8 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
            'rho': [],
            'cs': [],
            'toomre': [],
-           'utherm': []
+           'utherm': [],
+           'H': []
           }
 
     for i,rad in enumerate(rad_bins):
@@ -277,6 +278,7 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
         out['cs'].append(cs_cgs)
         out['toomre'].append(toomre)
         out['utherm'].append(np.mean(disc.utherm[wanted])*UNITS['uerg'])
+        out['H'].append(H)
 
     # also calc tcool and beta here, which needs calculating separately
     tcool = np.asarray(cooling.polytropic_cooling(out,verbose=False))
