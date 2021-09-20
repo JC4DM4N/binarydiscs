@@ -285,6 +285,19 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
 
     return out
 
+def calculate_disc_mass(disc,rmax=100):
+    """
+    Calcualte azimuthally averaged disc properties from pyphantom disc instance.
+    """
+    radii = np.sqrt(
+             (disc.xyzh[0]-disc.ptmass_xyzmh[0,0])**2 +
+             (disc.xyzh[1]-disc.ptmass_xyzmh[1,0])**2
+            )
+
+    wanted = radii <= rmax
+    mdisc = np.sum(wanted)*disc.massofgas
+    return mdisc
+
 def generate_u_udot_file(dump,outfile):
     """
     Generate data file containing thermodynamic properties of gas disc by running phantom
