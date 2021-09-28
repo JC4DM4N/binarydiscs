@@ -53,5 +53,27 @@ fragment_locations = {
         'tfrag' = 1300,
         'Nfrag' = 1,
         'rfrag' = [50]
+    },
+    'a250/e0.25/mdisc0.2' : {
+        'a' = 250,
+        'mdisc' = 0.2,
+        'e' = 0.25,
+        'i' = 0,
+        'Mstar2' = 0.2,
+        'rperi' = 147,
+        'tfrag' = 2000,
+        'Nfrag' = 6,
+        'rfrag' = [53,62,100,62,58,88]
+    },
+    'a250/e0.5/mdisc0.2' : {
+        'a' = 250,
+        'mdisc' = 0.2,
+        'e' = 0.5,
+        'i' = 0,
+        'Mstar2' = 0.2,
+        'rperi' = 107,
+        'tfrag' = 1770,
+        'Nfrag' = 1,
+        'rfrag' = [32]
     }
 }
