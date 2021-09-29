@@ -120,4 +120,37 @@ fragment_locations = {
         'Nfrag' = 1,
         'rfrag' = [60]
     },
+    'a150/i30/mdisc0.2' : {
+        'a' = 150,
+        'mdisc' = 0.2,
+        'e' = 0,
+        'i' = 30,
+        'Mstar2' = 0.2,
+        'rperi' = 114,
+        'tfrag' = 720,
+        'Nfrag' = 3,
+        'rfrag' = [28,43,59]
+    },
+    'a150/i60/mdisc0.2' : {
+        'a' = 150,
+        'mdisc' = 0.2,
+        'e' = 0,
+        'i' = 60,
+        'Mstar2' = 0.2,
+        'rperi' = 115,
+        'tfrag' = 1045,
+        'Nfrag' = 5,
+        'rfrag' = [59,50,55,71,79]
+    },
+    'a150/i90/mdisc0.2' : {
+        'a' = 150,
+        'mdisc' = 0.2,
+        'e' = 0,
+        'i' = 90,
+        'Mstar2' = 0.2,
+        'rperi' = 116,
+        'tfrag' = 1340,
+        'Nfrag' = 6,
+        'rfrag' = [86,60,53,62,65,50]
+    },
 }
