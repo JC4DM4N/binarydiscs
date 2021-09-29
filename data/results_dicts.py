@@ -153,4 +153,70 @@ fragment_locations = {
         'Nfrag' = 6,
         'rfrag' = [86,60,53,62,65,50]
     },
+    'a200/i30/mdisc0.2' : {
+        'a' = 200,
+        'mdisc' = 0.2,
+        'e' = 0,
+        'i' = 30,
+        'Mstar2' = 0.2,
+        'rperi' = 151,
+        'tfrag' = 1600,
+        'Nfrag' = 5,
+        'rfrag' = [64,43,58,77,61]
+    },
+    'a200/i60/mdisc0.2' : {
+        'a' = 200,
+        'mdisc' = 0.2,
+        'e' = 0,
+        'i' = 60,
+        'Mstar2' = 0.2,
+        'rperi' = 152,
+        'tfrag' = 2840,
+        'Nfrag' = 1,
+        'rfrag' = [59]
+    },
+    'a150/mstar0.1/mdisc0.2' : {
+        'a' = 150,
+        'mdisc' = 0.2,
+        'e' = 0,
+        'i' = 0,
+        'Mstar2' = 0.1,
+        'rperi' = 110,
+        'tfrag' = 900,
+        'Nfrag' = 3,
+        'rfrag' = [91,67,48]
+    },
+    'a150/mstar0.5/mdisc0.2' : {
+        'a' = 150,
+        'mdisc' = 0.2,
+        'e' = 0,
+        'i' = 0,
+        'Mstar2' = 0.5,
+        'rperi' = 112,
+        'tfrag' = 550,
+        'Nfrag' = 1,
+        'rfrag' = [69]
+    },
+    'a250/mstar0.5/mdisc0.2' : {
+        'a' = 250,
+        'mdisc' = 0.2,
+        'e' = 0,
+        'i' = 0,
+        'Mstar2' = 0.5,
+        'rperi' = 197,
+        'tfrag' = 1550,
+        'Nfrag' = 5,
+        'rfrag' = [51,37,59,74,85]
+    },
+    'a325/mstar0.5/mdisc0.2' : {
+        'a' = 325,
+        'mdisc' = 0.2,
+        'e' = 0,
+        'i' = 0,
+        'Mstar2' = 0.5,
+        'rperi' = 256,
+        'tfrag' = 4000,
+        'Nfrag' = 1,
+        'rfrag' = [67]
+    },
 }
