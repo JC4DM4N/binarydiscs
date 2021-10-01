@@ -9,7 +9,8 @@
         "tfrag" : 3050,
         "Nfrag" : 2,
         "Nfrag_final" : 1,
-        "rfrag" : [55,60]
+        "rfrag" : [55,60],
+        "rfrag_take2" : [55]
     },
     "a150/mdisc0.2" : {
         "a" : 150,
@@ -21,7 +22,8 @@
         "tfrag" : 750,
         "Nfrag" : 4,
         "Nfrag_final" : 4,
-        "rfrag" : [51,87,98,100]
+        "rfrag" : [51,87,98,100],
+        "rfrag_take2" : [47]
     },
     "a200/mdisc0.2" : {
         "a" : 200,
@@ -33,7 +35,8 @@
         "tfrag" : 1500,
         "Nfrag" : 6,
         "Nfrag_final" : 6,
-        "rfrag" : [77,67,103,81,52,55]
+        "rfrag" : [77,67,103,81,52,55],
+        "rfrag_take2" : [39]
     },
     "a150/e0.25/mdisc0.2" : {
         "a" : 150,
@@ -45,7 +48,8 @@
         "tfrag" : 900,
         "Nfrag" : 1,
         "Nfrag_final" : 1,
-        "rfrag" : [54]
+        "rfrag" : [54],
+        "rfrag_take2" : [82]
     },
     "a200/e0.25/mdisc0.2" : {
         "a" : 200,
@@ -57,7 +61,8 @@
         "tfrag" : 1300,
         "Nfrag" : 1,
         "Nfrag_final" : 1,
-        "rfrag" : [50]
+        "rfrag" : [50],
+        "rfrag_take2" : [48]
     },
     "a250/e0.25/mdisc0.2" : {
         "a" : 250,
@@ -69,7 +74,8 @@
         "tfrag" : 2000,
         "Nfrag" : 6,
         "Nfrag_final" : 6,
-        "rfrag" : [53,62,100,62,58,88]
+        "rfrag" : [53,62,100,62,58,88],
+        "rfrag_take2" : [50]
     },
     "a250/e0.5/mdisc0.2" : {
         "a" : 250,
@@ -81,7 +87,8 @@
         "tfrag" : 1770,
         "Nfrag" : 1,
         "Nfrag_final" : 1,
-        "rfrag" : [32]
+        "rfrag" : [32],
+        "rfrag" : [38]
     },
     "a325/e0.5/mdisc0.2" : {
         "a" : 325,
@@ -93,7 +100,8 @@
         "tfrag" : 2750,
         "Nfrag" : 2,
         "Nfrag_final" : 3,
-        "rfrag" : [30,76]
+        "rfrag" : [30,76],
+        "rfrag_take2" : [36]
     },
     "a400/e0.5/mdisc0.2" : {
         "a" : 400,
@@ -105,7 +113,8 @@
         "tfrag" : 3800,
         "Nfrag" : 6,
         "Nfrag_final" : 6,
-        "rfrag" : [80,56,85,40,66,53]
+        "rfrag" : [80,56,85,40,66,53],
+        "rfrag_take2" : [35]
     },
     "a100/i60/mdisc0.2" : {
         "a" : 100,
@@ -117,7 +126,8 @@
         "tfrag" : 835,
         "Nfrag" : 1,
         "Nfrag_final" : 1,
-        "rfrag" : [79]
+        "rfrag" : [79],
+        "rfrag_take2" : [66]
     },
     "a100/i90/mdisc0.2" : {
         "a" : 100,
@@ -129,7 +139,8 @@
         "tfrag" : 835,
         "Nfrag" : 1,
         "Nfrag_final" : 1,
-        "rfrag" : [60]
+        "rfrag" : [60],
+        "rfrag_take2" : [56]
     },
     "a150/i30/mdisc0.2" : {
         "a" : 150,
@@ -141,7 +152,8 @@
         "tfrag" : 720,
         "Nfrag" : 3,
         "Nfrag_final" : 3,
-        "rfrag" : [28,43,59]
+        "rfrag" : [28,43,59],
+        "rfrag_take2" : [30]
     },
     "a150/i60/mdisc0.2" : {
         "a" : 150,
