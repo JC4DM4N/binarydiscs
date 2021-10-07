@@ -36,6 +36,8 @@ def mscatter(x,y, ax=None, m=None, **kw):
                         marker_obj.get_transform())
             paths.append(path)
         sc.set_paths(paths)
+    ax.grid(alpha=0.5)
+    ax.set_axisbelow(True)
     return sc
 
 sc = mscatter(asep,rfrag,c=ecc,cmap=cm.get_cmap('inferno_r'),edgecolors='black',s=150,m=markers)
