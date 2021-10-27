@@ -107,7 +107,7 @@ def edit_splash_defaults():
     # ensure plotting physical units
     output = ['IRESCALE=T ,' if 'IRESCALE' in row else row for row in output]
     # increase font size
-    output = ['CHARHEIGHT=  1.5 ,' if 'CHARHEIGHT' in row else row for row in output]
+    output = ['CHARHEIGHT=  2 ,' if 'CHARHEIGHT' in row else row for row in output]
     # turn time legend off
     output = ['IPLOTLEGEND=  F ,' if 'IPLOTLEGEND' in row else row for row in output]
     # turn colour bar off
