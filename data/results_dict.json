@@ -87,8 +87,7 @@
         "tfrag" : 1770,
         "Nfrag" : 1,
         "Nfrag_final" : 1,
-        "rfrag" : [32],
-        "rfrag" : [38]
+        "rfrag" : [32]
     },
     "a325/e0.5/mdisc0.2" : {
         "a" : 325,
