@@ -18,7 +18,7 @@ if __name__=='__main__':
 
     for dump in initial_dumps:
         disc = phantom.read_dump_file(dump)
-        out_dict = get_az_averaged_properties(disc)
+        out_dict = phantom.get_az_averaged_properties(disc)
         r0 = out_dict['r'][1]
         sig0 = out_dict['sigma'][1]
         temp0 = out_dict['temp'][1]
@@ -28,4 +28,4 @@ if __name__=='__main__':
                             'T0' : temp0
                             }
 
-    json.dump(results_dict, open('sig0_T0_all.json'))
+    json.dump(results_dict, open('sig0_T0_all.json','w'), indent=4)
