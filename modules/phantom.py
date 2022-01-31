@@ -133,17 +133,19 @@ def generate_png_plot(input_file,output_file=DEFAULT_SPLASH_OUTPUT_FILE):
     if os.path.exists(os.path.join(input_dir,'splash.limits')):
         shutil.copy(os.path.join(input_dir,'splash.limits'),'.')
     else:
-        shutil.copy('../splash_templates/splash.limits','.')
+        shutil.copy(os.path.join(os.path.dirname(__file__),'../splash_templates/splash.limits'),'.')
     if os.path.exists(os.path.join(input_dir,'splash.defaults')):
         shutil.copy(os.path.join(input_dir,'splash.defaults'),'.')
     else:
-        shutil.copy('../splash_templates/splash.defaults','.')
+        shutil.copy(os.path.join(os.path.dirname(__file__),'../splash_templates/splash.defaults'),'.')
 
     disc = read_dump_file(input_file)
     edit_splash_limits(disc)
     edit_splash_defaults()
 
-    subprocess.call(['../phantom_files/splash',input_file,
+    path_to_exe = os.path.join(os.path.dirname(__file__),'../phantom_files/splash')
+
+    subprocess.call([path_to_exe,input_file,
                     '-y','2',
                     '-x','1',
                     '-r','6',
