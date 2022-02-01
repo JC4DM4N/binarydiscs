@@ -17,7 +17,11 @@ if __name__=='__main__':
     results_dict = {}
 
     for dump in initial_dumps:
-        disc = phantom.read_dump_file(dump)
+        try:
+            disc = phantom.read_dump_file(dump)
+        except:
+            print("could not open file %s" %dump)
+            continue
         out_dict = phantom.get_az_averaged_properties(disc)
         r0 = out_dict['r'][1]
         sig0 = out_dict['sigma'][4]
