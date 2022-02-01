@@ -76,11 +76,11 @@ def edit_splash_limits(disc):
     """
     # plots +/- 150au around the star
     star_xy = disc.ptmass_xyzmh[:2,0]
-    xmin, xmax = (star_xy[0] - 200, star_xy[0] + 200)
-    ymin, ymax = (star_xy[1] - 200, star_xy[1] + 200)
+    xmin, xmax = (star_xy[0] - 400, star_xy[0] + 400)
+    ymin, ymax = (star_xy[1] - 400, star_xy[1] + 400)
 
     # try a constant density limit across all discs
-    rho_min, rho_max = (1e-2,1e4)
+    rho_min, rho_max = (1e-1,1e3)
 
     # write new limits to splash.limits file
     splash_limits = np.genfromtxt('splash.limits')
@@ -114,6 +114,13 @@ def edit_splash_defaults():
     output = ['ICOLOURBARSTYLE=  0 ,' if 'ICOLOURBARSTYLE' in row else row for row in output]
     # make paper size a "large square"
     output = ['IPAPERSTYLE=  3 ,' if 'IPAPERSTYLE' in row else row for row in output]
+
+    # OPTIONS FOR PLOTTING SINK PARTICLES
+    output = ['IMARKTYPE=1 , 4 , 17 , 1 , 3 ,' if 'IMARKTYPE' in row else row for row in output]
+    output = ['IPLOTPARTOFTYPE=T,F,T, 21*F,' if 'IPLOTPARTOFTYPE' in row else row for row in output]
+    output = ['PLOTONRENDERINGS= 2*F,T, 21*F,' if 'PLOTONRENDERINGS' in row else row for row in output]
+    output = ['IDEFAULTCOLOURTYPE= 2*-1, 2, 21*-1 ,' if 'IDEFAULTCOLOURTYPE' in row else row for row in output]
+
     #write to file
     np.savetxt('splash.defaults',output,fmt='%s')
     return
@@ -131,11 +138,13 @@ def generate_png_plot(input_file,output_file=DEFAULT_SPLASH_OUTPUT_FILE):
     input_dir = os.path.dirname(input_file)
 
     if os.path.exists(os.path.join(input_dir,'splash.limits')):
-        shutil.copy(os.path.join(input_dir,'splash.limits'),'.')
+        pass
+        #shutil.copy(os.path.join(input_dir,'splash.limits'),'.')
     else:
         shutil.copy(os.path.join(os.path.dirname(__file__),'../splash_templates/splash.limits'),'.')
     if os.path.exists(os.path.join(input_dir,'splash.defaults')):
-        shutil.copy(os.path.join(input_dir,'splash.defaults'),'.')
+        pass
+        #shutil.copy(os.path.join(input_dir,'splash.defaults'),'.')
     else:
         shutil.copy(os.path.join(os.path.dirname(__file__),'../splash_templates/splash.defaults'),'.')
 
