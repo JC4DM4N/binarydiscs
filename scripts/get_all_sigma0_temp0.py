@@ -10,9 +10,9 @@ sys.path.insert(0,'../modules')
 import phantom
 
 if __name__=='__main__':
-    all_dumps = phantom.collect_all_dumps('..')
     # just want the initial dumps from each dir
-    initial_dumps = [dump for dump in all_dumps if dump.endswith('sgdisc_00000')]
+    folder = '../init_dumps'
+    initial_dumps = [os.path.join(folder, file) for file in os.listdir(folder)]
 
     results_dict = {}
 
@@ -24,7 +24,7 @@ if __name__=='__main__':
             continue
         out_dict = phantom.get_az_averaged_properties(disc)
         r0 = out_dict['r'][1]
-        sig0 = out_dict['sigma'][1]
+        sig0 = out_dict['sigma'][4]
         temp0 = out_dict['temp'][1]
         results_dict[dump] = {
                             'R0' : r0,
