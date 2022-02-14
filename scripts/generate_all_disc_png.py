@@ -13,7 +13,7 @@ sys.path.insert(0,os.path.join(os.path.dirname(__file__),'../modules'))
 import phantom
 
 plots_output_dir = '.'
-all_dumps = [file for file in os.listdir('.') if 'disc_00' in file]
+all_dumps = [file for file in os.listdir('.') if 'abc' in file]
 # potentially will be some files like 'sgdisc_00000.png', so remove these from list
 all_dumps = [file for file in all_dumps if not file.endswith('.png')]
 
