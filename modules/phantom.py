@@ -159,7 +159,7 @@ def generate_png_plot(input_file,output_file=DEFAULT_SPLASH_OUTPUT_FILE,orientat
 
     if orientation=='xz':
         subprocess.call([path_to_exe,input_file,
-                        '-z','3',
+                        '-y','3',
                         '-x','1',
                         '-r','6',
                         '-dev','/png'])
