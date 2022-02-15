@@ -69,7 +69,7 @@ def collect_all_final_dumps(parent_dir='..'):
             all_final_dumps.append(sorted(all_dumps)[-1])
     return all_final_dumps
 
-def edit_splash_limits(disc):
+def edit_splash_limits(disc,orientation='xy'):
     """
     Edit splash.limits file for a few custom plotting preferences.
     Required splash.defaults file is present in the working directory.
@@ -77,7 +77,10 @@ def edit_splash_limits(disc):
     # plots +/- 150au around the star
     star_xy = disc.ptmass_xyzmh[:2,0]
     xmin, xmax = (star_xy[0] - 400, star_xy[0] + 400)
-    ymin, ymax = (star_xy[1] - 400, star_xy[1] + 400)
+    if orientation=='xz':
+        ymin, ymax = (star_xy[1] - 200, star_xy[1] + 200)
+    else:
+        ymin, ymax = (star_xy[1] - 400, star_xy[1] + 400)
 
     # try a constant density limit across all discs
     rho_min, rho_max = (1e-1,1e3)
@@ -127,7 +130,7 @@ def edit_splash_defaults():
 
 DEFAULT_SPLASH_OUTPUT_FILE = 'splash.png'
 
-def generate_png_plot(input_file,output_file=DEFAULT_SPLASH_OUTPUT_FILE):
+def generate_png_plot(input_file,output_file=DEFAULT_SPLASH_OUTPUT_FILE,orientation='xy'):
     """
     Generate rendered plot of gas density by running splash and saving the output
         as a png file.
@@ -149,16 +152,23 @@ def generate_png_plot(input_file,output_file=DEFAULT_SPLASH_OUTPUT_FILE):
         shutil.copy(os.path.join(os.path.dirname(__file__),'../splash_templates/splash.defaults'),'.')
 
     disc = read_dump_file(input_file)
-    edit_splash_limits(disc)
+    edit_splash_limits(disc,orientation)
     edit_splash_defaults()
 
     path_to_exe = os.path.join(os.path.dirname(__file__),'../phantom_files/splash')
 
-    subprocess.call([path_to_exe,input_file,
-                    '-y','2',
-                    '-x','1',
-                    '-r','6',
-                    '-dev','/png'])
+    if orientation=='xz':
+        subprocess.call([path_to_exe,input_file,
+                        '-z','3',
+                        '-x','1',
+                        '-r','6',
+                        '-dev','/png'])
+    else:
+        subprocess.call([path_to_exe,input_file,
+                        '-y','2',
+                        '-x','1',
+                        '-r','6',
+                        '-dev','/png'])
     shutil.move('splash.png',output_file)
 
     os.remove('splash.limits')
