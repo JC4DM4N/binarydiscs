@@ -75,12 +75,15 @@ def edit_splash_limits(disc,orientation='xy'):
     Required splash.defaults file is present in the working directory.
     """
     # plots +/- 150au around the star
-    star_xy = disc.ptmass_xyzmh[:2,0]
-    xmin, xmax = (star_xy[0] - 400, star_xy[0] + 400)
+    star_xyz = disc.ptmass_xyzmh[:3,0]
     if orientation=='xz':
-        ymin, ymax = (star_xy[1] - 200, star_xy[1] + 200)
+        xmin, xmax = (star_xyz[0] - 200, star_xyz[0] + 200)
+        ymin, ymax = (star_xyz[1] - 200, star_xyz[1] + 200)
+        zmin, zmax = (star_xyz[2] - 200, star_xyz[2] + 200)
     else:
-        ymin, ymax = (star_xy[1] - 400, star_xy[1] + 400)
+        xmin, xmax = (star_xyz[0] - 400, star_xyz[0] + 400)
+        ymin, ymax = (star_xyz[1] - 400, star_xyz[1] + 400)
+        zmin, zmax = (star_xyz[2] - 400, star_xyz[2] + 400)
 
     # try a constant density limit across all discs
     rho_min, rho_max = (1e-1,1e3)
@@ -88,11 +91,13 @@ def edit_splash_limits(disc,orientation='xy'):
     # write new limits to splash.limits file
     splash_limits = np.genfromtxt('splash.limits')
     output = splash_limits.copy()
-    # x,y limits
+    # x,y,z limits
     output[0,0] = xmin
     output[0,1] = xmax
     output[1,0] = ymin
     output[1,1] = ymax
+    output[2,0] = zmin
+    output[2,1] = zmax
     # density limits
     output[5,0] = rho_min
     output[5,1] = rho_max
