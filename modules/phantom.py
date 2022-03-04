@@ -69,7 +69,7 @@ def collect_all_final_dumps(parent_dir='..'):
             all_final_dumps.append(sorted(all_dumps)[-1])
     return all_final_dumps
 
-def edit_splash_limits(disc,orientation='xy'):
+def edit_splash_limits(disc,orientation='xy',render=6):
     """
     Edit splash.limits file for a few custom plotting preferences.
     Required splash.defaults file is present in the working directory.
@@ -85,8 +85,9 @@ def edit_splash_limits(disc,orientation='xy'):
         ymin, ymax = (star_xyz[1] - 400, star_xyz[1] + 400)
         zmin, zmax = (star_xyz[2] - 400, star_xyz[2] + 400)
 
-    # try a constant density limit across all discs
-    rho_min, rho_max = (1e-1,1e3)
+    # try a constant vmin and vmax across all discs
+    vmin_divv, vmax_divv = (-1e-10,1e-10)
+    vmin_dens, vmax_dens = (1e-1,1e3)
 
     # write new limits to splash.limits file
     splash_limits = np.genfromtxt('splash.limits')
@@ -99,13 +100,16 @@ def edit_splash_limits(disc,orientation='xy'):
     output[2,0] = zmin
     output[2,1] = zmax
     # density limits
-    output[5,0] = rho_min
-    output[5,1] = rho_max
+    output[5,0] = vmin_dens
+    output[5,1] = vmax_dens
+    # div v limits
+    output[10,0] = vmin_divv
+    output[10,1] = vmax_divv
     #write to file
     np.savetxt('splash.limits',output,fmt='%s')
     return
 
-def edit_splash_defaults():
+def edit_splash_defaults(render=6):
     """
     Edit splash.defaults file for a few custom plotting preferences.
     Required splash.defaults file is present in the working directory.
@@ -119,7 +123,7 @@ def edit_splash_defaults():
     # turn time legend off
     output = ['IPLOTLEGEND=  F ,' if 'IPLOTLEGEND' in row else row for row in output]
     # turn colour bar off
-    output = ['ICOLOURBARSTYLE=  0 ,' if 'ICOLOURBARSTYLE' in row else row for row in output]
+    #output = ['ICOLOURBARSTYLE=  0 ,' if 'ICOLOURBARSTYLE' in row else row for row in output]
     # make paper size a "large square"
     output = ['IPAPERSTYLE=  3 ,' if 'IPAPERSTYLE' in row else row for row in output]
 
@@ -129,13 +133,21 @@ def edit_splash_defaults():
     output = ['PLOTONRENDERINGS= 2*F,T, 21*F,' if 'PLOTONRENDERINGS' in row else row for row in output]
     output = ['IDEFAULTCOLOURTYPE= 2*-1, 2, 21*-1 ,' if 'IDEFAULTCOLOURTYPE' in row else row for row in output]
 
+    # if we are doing div v plots...
+    if render==11:
+        output = ['ICOLOURS=40 ,' if 'ICOLOURS' in row else row for row in output]
+        output = ['IDENSITYWEIGHTEDINTERPOLATION=T,' if 'IDENSITYWEIGHTEDINTERPOLATION' in row else row for row in output]
+    else:
+        output = ['ICOLOURS=2 ,' if 'ICOLOURS' in row else row for row in output]
+        output = ['IDENSITYWEIGHTEDINTERPOLATION=F,' if 'IDENSITYWEIGHTEDINTERPOLATION' in row else row for row in output]
+
     #write to file
     np.savetxt('splash.defaults',output,fmt='%s')
     return
 
 DEFAULT_SPLASH_OUTPUT_FILE = 'splash.png'
 
-def generate_png_plot(input_file,output_file=DEFAULT_SPLASH_OUTPUT_FILE,orientation='xy'):
+def generate_png_plot(input_file,output_file=DEFAULT_SPLASH_OUTPUT_FILE,orientation='xy',render=6):
     """
     Generate rendered plot of gas density by running splash and saving the output
         as a png file.
@@ -157,8 +169,8 @@ def generate_png_plot(input_file,output_file=DEFAULT_SPLASH_OUTPUT_FILE,orientat
         shutil.copy(os.path.join(os.path.dirname(__file__),'../splash_templates/splash.defaults'),'.')
 
     disc = read_dump_file(input_file)
-    edit_splash_limits(disc,orientation)
-    edit_splash_defaults()
+    edit_splash_limits(disc,orientation,render)
+    edit_splash_defaults(render)
 
     path_to_exe = os.path.join(os.path.dirname(__file__),'../phantom_files/splash')
 
@@ -166,13 +178,13 @@ def generate_png_plot(input_file,output_file=DEFAULT_SPLASH_OUTPUT_FILE,orientat
         subprocess.call([path_to_exe,input_file,
                         '-y','3',
                         '-x','1',
-                        '-r','6',
+                        '-r',str(render),
                         '-dev','/png'])
     else:
         subprocess.call([path_to_exe,input_file,
                         '-y','2',
                         '-x','1',
-                        '-r','6',
+                        '-r',str(render),
                         '-dev','/png'])
     shutil.move('splash.png',output_file)
 
@@ -235,7 +247,7 @@ def create_binary_separation_file(input_dir,output_dir):
     sepfile.close()
     posfile.close()
 
-def get_az_averaged_properties(disc,nbins=100,rmax=100):
+def get_az_averaged_properties(disc,nbins=100,rmax=100,get_thermo=False):
     """
     Calcualte azimuthally averaged disc properties from pyphantom disc instance.
     """
@@ -306,10 +318,11 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100):
         out['utherm'].append(np.mean(disc.utherm[wanted])*UNITS['uerg'])
         out['H'].append(H)
 
-    # also calc tcool and beta here, which needs calculating separately
-    tcool = np.asarray(cooling.polytropic_cooling(out,verbose=False))
-    out['tcool'] = tcool/60./60./24./365.25
-    out['beta'] = tcool*np.asarray(out['omega'])
+    if get_thermo:
+        # also calc tcool and beta here, which needs calculating separately
+        tcool = np.asarray(cooling.polytropic_cooling(out,verbose=False))
+        out['tcool'] = tcool/60./60./24./365.25
+        out['beta'] = tcool*np.asarray(out['omega'])
 
     return out
 
