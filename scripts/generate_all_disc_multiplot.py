@@ -54,7 +54,7 @@ for dump in all_dumps:
 all_plots = [file for file in os.listdir('.') if file.endswith('.png')]
 for i, dump in enumerate(all_dumps):
 
-    fig, ax = plt.subplots(1,3,figsize=(30,8))
+    fig, ax = plt.subplots(1,3,figsize=(20,5))
 
     plot_id = dump + '_dens.png'
     fname = os.path.join(plots_output_dir,plot_id)
