@@ -4,7 +4,6 @@ import subprocess
 import shutil
 import PIL.Image as Image
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import numpy as np
 import argparse
 
@@ -37,4 +36,4 @@ for dump in all_dumps:
     # generate and save the plot
     phantom.generate_png_plot(dump,output_fname,orientation)
     # crop the plots to remove white space
-    crop_splash_image(output_fname)
+    #crop_splash_image(output_fname)
