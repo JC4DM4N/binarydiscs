@@ -81,9 +81,9 @@ def edit_splash_limits(disc,orientation='xy',render=6):
         ymin, ymax = (star_xyz[1] - 200, star_xyz[1] + 200)
         zmin, zmax = (star_xyz[2] - 200, star_xyz[2] + 200)
     else:
-        xmin, xmax = (star_xyz[0] - 400, star_xyz[0] + 400)
-        ymin, ymax = (star_xyz[1] - 400, star_xyz[1] + 400)
-        zmin, zmax = (star_xyz[2] - 400, star_xyz[2] + 400)
+        xmin, xmax = (star_xyz[0] - 350, star_xyz[0] + 350)
+        ymin, ymax = (star_xyz[1] - 350, star_xyz[1] + 350)
+        zmin, zmax = (star_xyz[2] - 350, star_xyz[2] + 350)
 
     # try a constant vmin and vmax across all discs
     vmin_divv, vmax_divv = (-1e-10,1e-10)
