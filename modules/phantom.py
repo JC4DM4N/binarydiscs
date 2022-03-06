@@ -253,7 +253,8 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100,get_thermo=False):
     """
     radii = np.sqrt(
              (disc.xyzh[0]-disc.ptmass_xyzmh[0,0])**2 +
-             (disc.xyzh[1]-disc.ptmass_xyzmh[1,0])**2
+             (disc.xyzh[1]-disc.ptmass_xyzmh[1,0])**2 +
+             (disc.xyzh[2]-disc.ptmass_xyzmh[2,0])**2
             )
 
     rad_bins = np.linspace(0,rmax,nbins)
@@ -412,7 +413,8 @@ def get_az_averaged_u_udot(results_dict,nbins=100,rmax=100):
     """
     radii = np.sqrt(
         (results_dict['x'] - results_dict['ptmass_x'])**2 +
-        (results_dict['y'] - results_dict['ptmass_y'])**2
+        (results_dict['y'] - results_dict['ptmass_y'])**2+
+        (results_dict['z'] - results_dict['ptmass_z'])**2
     )
 
     rad_bins = np.linspace(0,rmax,nbins)
