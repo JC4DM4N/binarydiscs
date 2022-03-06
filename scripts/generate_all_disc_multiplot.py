@@ -23,7 +23,7 @@ def crop_splash_image(input_file):
     box = (80, 0, 730, 600)
     small_im = im.crop(box)
     small_im.save(input_file)
-"""
+
 # plot all discs
 for dump in all_dumps:
     # generate and save the plot of density
@@ -54,7 +54,7 @@ for dump in all_dumps:
     plt.ylim([0,5])
     plt.savefig(output_fname)
     plt.clf()
-"""
+
 def generate_plot_title():
     dirname = os.getcwd().split('/')[-1]
     translations = {
