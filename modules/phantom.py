@@ -247,14 +247,13 @@ def create_binary_separation_file(input_dir,output_dir):
     sepfile.close()
     posfile.close()
 
-def get_az_averaged_properties(disc,nbins=100,rmax=100,get_thermo=False):
+def get_az_averaged_properties(disc,nbins=100,rmax=100,get_thermo=False,midplane_only=True):
     """
     Calcualte azimuthally averaged disc properties from pyphantom disc instance.
     """
     radii = np.sqrt(
              (disc.xyzh[0]-disc.ptmass_xyzmh[0,0])**2 +
-             (disc.xyzh[1]-disc.ptmass_xyzmh[1,0])**2 +
-             (disc.xyzh[2]-disc.ptmass_xyzmh[2,0])**2
+             (disc.xyzh[1]-disc.ptmass_xyzmh[1,0])**2
             )
 
     rad_bins = np.linspace(0,rmax,nbins)
@@ -292,8 +291,11 @@ def get_az_averaged_properties(disc,nbins=100,rmax=100,get_thermo=False):
         spsound2_cgs = gamma*(gamma-1)*disc.utherm*UNITS['uerg'] # from phantom discplot.f90
         cs_cgs = np.sqrt(np.mean(spsound2_cgs))
         H = cs_cgs/omega_cgs
-        # only want particles in disc midplane, defined as within 1AU of center
-        midplane_mask = abs(disc.xyzh[2]-disc.ptmass_xyzmh[2,0])*UNITS['udist'] < H
+        if midplane_only:
+            # only want particles in disc midplane, defined as within 1AU of center
+            midplane_mask = abs(disc.xyzh[2]-disc.ptmass_xyzmh[2,0])*UNITS['udist'] < H
+        else:
+            midplane_mask = [True]*len(disc.xyzh[2])
         # don't want any particles with h < 0
         h_mask = disc.xyzh[3] > 0
         wanted = inbin & midplane_mask & h_mask
@@ -413,8 +415,7 @@ def get_az_averaged_u_udot(results_dict,nbins=100,rmax=100):
     """
     radii = np.sqrt(
         (results_dict['x'] - results_dict['ptmass_x'])**2 +
-        (results_dict['y'] - results_dict['ptmass_y'])**2+
-        (results_dict['z'] - results_dict['ptmass_z'])**2
+        (results_dict['y'] - results_dict['ptmass_y'])**2
     )
 
     rad_bins = np.linspace(0,rmax,nbins)
