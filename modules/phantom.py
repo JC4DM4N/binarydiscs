@@ -407,7 +407,7 @@ def read_u_udot_file(infile):
 
     return out
 
-def get_az_averaged_u_udot(results_dict,nbins=100,rmax=100):
+def get_az_averaged_u_udot(results_dict,nbins=100,rmax=100,midplane_only=True):
     """
     Calculate azimuthally averaged u, du/dt, beta and tcool from values outputted
         directly from phantom.
@@ -436,8 +436,11 @@ def get_az_averaged_u_udot(results_dict,nbins=100,rmax=100):
     for i,rad in enumerate(rad_bins):
         # mask for particles in this radial bin
         inbin = ibins==i
-        # only want particles in disc midplane, defined as within 1AU of center
-        midplane_mask = np.abs(results_dict['z']-results_dict['ptmass_z']) < 1
+        if midplane_only:
+            # only want particles in disc midplane, defined as within 1AU of center
+            midplane_mask = np.abs(results_dict['z']-results_dict['ptmass_z']) < 1
+        else:
+            midplane_mask = [True]*len(results_dict['x'])
         # only want particles with h>0
         h_mask = results_dict['h'] > 0
         # the mask
