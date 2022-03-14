@@ -45,7 +45,7 @@ for dump in all_dumps:
     plot_id = dump + '_toomre.png'
     output_fname = os.path.join(plots_output_dir,plot_id)
     disc = phantom.read_dump_file(dump)
-    disc_properties = phantom.get_az_averaged_properties(disc)
+    disc_properties = phantom.get_az_averaged_properties(disc,midplane_only=False)
     fig = plt.Figure(figsize=(5,5))
     plt.plot(disc_properties['r'], disc_properties['toomre'])
     plt.ylabel('Toomre Q',fontsize=20)
