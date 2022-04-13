@@ -28,7 +28,7 @@ pix_dist = ((pix_index_x-centre_pix[0])**2 + (pix_index_y-centre_pix[1])**2)**0.
 if args.affine:
     # perform affine transformation to deproject the image if required
     # needs to be performed in two halves to ensure transformation is about the centre of the image
-    affine_upper = [
+    affine = [
               [1,0,0],
               [0, np.cos(args.tilt), -np.sin(args.tilt)],
               [0,np.sin(args.tilt), np.cos(args.tilt)]
@@ -36,14 +36,14 @@ if args.affine:
     for i in range(8):
         # need to invert the top half, affine transform, then revert to original row ordering
         pil_im = Image.fromarray(im[0].data[i][0][0][:450][::-1])
-        transformed = pil_im.transform((npix_x, 450), Image.AFFINE, data=np.asarray(affine_upper).T.flatten())
+        transformed = pil_im.transform((npix_x, 450), Image.AFFINE, data=np.asarray(affine).T.flatten())
         im_sub[0].data[i][0][0][:450] = transformed
         im_sub[0].data[i][0][0][:450] = im_sub[0].data[i][0][0][:450][::-1]
 
     # perform affine transformation on the bottom half of the image
     for i in range(8):
         pil_im = Image.fromarray(im[0].data[i][0][0][450:])
-        transformed = pil_im.transform((npix_x, 451), Image.AFFINE, data=np.asarray(affine_lower).T.flatten())
+        transformed = pil_im.transform((npix_x, 451), Image.AFFINE, data=np.asarray(affine).T.flatten())
         im_sub[0].data[i][0][0][450:] = transformed
 
 for i in range(8):
