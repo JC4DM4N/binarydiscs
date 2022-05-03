@@ -17,7 +17,7 @@ momentum = disc.massofgas*disc.vxyz
 if len(disc.ptmass_xyzmh.shape) == 1:
     sep = disc.xyzh[:3] - disc.ptmass_xyzmh[:3]
 else:
-    sep = disc.xyzh[:3] - disc.ptmass_xyzmh[:3,0]
+    sep = disc.xyzh[:3] - disc.ptmass_xyzmh[:3,0].reshape([3,1])
 AM = np.sum(np.cross(sep.T,momentum.T),axis=0)
 
 # want to print different things if we do or don't include the companion in our calculations
