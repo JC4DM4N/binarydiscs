@@ -25,8 +25,11 @@ if args.include_companion:
     ptmass_momentum = disc.ptmass_xyzmh[4,1]*disc.ptmass_vxyz[:,1]
     ptmass_sep = disc.ptmass_xyzmh[:3,0] - disc.ptmass_xyzmh[:3,1]
     companion_AM = np.cross(ptmass_sep.T, ptmass_momentum.T)
+    #angle between the two vectors
+    theta = np.arccos(np.dot(AM, companion_AM.T)/(np.linalg.norm(AM)*np.linalg.norm(companion_AM)))
     print("Total AM Vector of disc: %.3f %3f %.3f" %(AM[0], AM[1], AM[2]))
     print("Total AM Vector of companion: %.3f %3f %.3f" %(companion_AM[0], companion_AM[1], companion_AM[2]))
+    print("Angle between vectors: %.2f" %(theta*180/np.pi))
 else:
     # just print results for the disc
     print("Total AM Vector of disc: %.3f %3f %.3f" %(AM[0], AM[1], AM[2]))
