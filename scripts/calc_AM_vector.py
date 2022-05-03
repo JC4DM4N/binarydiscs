@@ -28,9 +28,13 @@ if args.include_companion:
     companion_AM = np.cross(ptmass_sep.T, ptmass_momentum.T)
     #angle between the two vectors
     theta = np.arccos(np.dot(AM, companion_AM.T)/(np.linalg.norm(AM)*np.linalg.norm(companion_AM)))
+    #angle between vector and xy plane
+    unit_vec_xy = np.asarray([np.sqrt(0.5),np.sqrt(0.5),0])
+    theta2 = np.arccos(np.dot(AM, unit_vec_xy.T)/(np.linalg.norm(AM)*np.linalg.norm(unit_vec_xy)))
     print("Total AM Vector of disc: %.3f %3f %.3f" %(AM[0], AM[1], AM[2]))
     print("Total AM Vector of companion: %.3f %3f %.3f" %(companion_AM[0], companion_AM[1], companion_AM[2]))
     print("Angle between vectors: %.2f" %(theta*180/np.pi))
+    print("Angle between vector and xy plane: %.2f" %(90. - theta2*180./np.pi))
     if args.write_to_file:
         if not os.path.exists('AM_angles.dat'):
             f = open('AM_angles.dat','w')
