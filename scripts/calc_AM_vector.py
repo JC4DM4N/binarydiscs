@@ -9,6 +9,7 @@ import phantom
 parser = argparse.ArgumentParser()
 parser.add_argument("-file")
 parser.add_argument("-include_companion", action='store_true', default=False)
+parser.add_argument("-write_to_file", action='store_true', default=False)
 args = parser.parse_args()
 
 disc = pa(args.file)
@@ -30,6 +31,14 @@ if args.include_companion:
     print("Total AM Vector of disc: %.3f %3f %.3f" %(AM[0], AM[1], AM[2]))
     print("Total AM Vector of companion: %.3f %3f %.3f" %(companion_AM[0], companion_AM[1], companion_AM[2]))
     print("Angle between vectors: %.2f" %(theta*180/np.pi))
+    if args.write_to_file:
+        if not os.path.exists('AM_angles.dat'):
+            f = open('AM_angles.dat','w')
+            f.write("time   angle")
+        else:
+            f = open('AM_angles.dat','a')
+        f.write("%.2f   %.2f" %(disc.time, theta*180/np.pi))
+        f.close()
 else:
     # just print results for the disc
     print("Total AM Vector of disc: %.3f %3f %.3f" %(AM[0], AM[1], AM[2]))
