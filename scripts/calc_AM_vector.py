@@ -34,10 +34,10 @@ if args.include_companion:
     if args.write_to_file:
         if not os.path.exists('AM_angles.dat'):
             f = open('AM_angles.dat','w')
-            f.write("time   angle")
+            f.write("time   angle \n")
         else:
             f = open('AM_angles.dat','a')
-        f.write("%.2f   %.2f" %(disc.time, theta*180/np.pi))
+        f.write("%.2f   %.2f \n" %(disc.time, theta*180/np.pi))
         f.close()
 else:
     # just print results for the disc
