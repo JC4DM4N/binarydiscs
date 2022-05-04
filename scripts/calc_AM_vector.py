@@ -31,17 +31,24 @@ if args.include_companion:
     #angle between vector and xy plane
     unit_vec_xy = np.asarray([np.sqrt(0.5),np.sqrt(0.5),0])
     theta2 = np.arccos(np.dot(AM, unit_vec_xy.T)/(np.linalg.norm(AM)*np.linalg.norm(unit_vec_xy)))
+    theta2 -= np.pi/2.
+    #angle between star AM vector and xy plane
+    unit_vec_xy = np.asarray([np.sqrt(0.5),np.sqrt(0.5),0])
+    theta3 = np.arccos(np.dot(companion_AM, unit_vec_xy.T)/(np.linalg.norm(companion_AM)*np.linalg.norm(unit_vec_xy)))
+    theta3 -= np.pi/2.
+
     print("Total AM Vector of disc: %.3f %3f %.3f" %(AM[0], AM[1], AM[2]))
     print("Total AM Vector of companion: %.3f %3f %.3f" %(companion_AM[0], companion_AM[1], companion_AM[2]))
     print("Angle between vectors: %.2f" %(theta*180/np.pi))
-    print("Angle between vector and xy plane: %.2f" %(90. - theta2*180./np.pi))
+    print("Angle between vector and xy plane: %.2f" %(theta2*180./np.pi))
+    print("Angle between companion AM vector and xy plane: %.2f" %(theta3*180./np.pi))
     if args.write_to_file:
         if not os.path.exists('AM_angles.dat'):
             f = open('AM_angles.dat','w')
-            f.write("time   angle   angle_xy  \n")
+            f.write("time   angle   angle_xy  angle_xy_companion \n")
         else:
             f = open('AM_angles.dat','a')
-        f.write("%.2f   %.2f   %.2f \n" %(disc.time, theta*180/np.pi, theta2*180/np.pi))
+        f.write("%.2f   %.2f   %.2f   %.2f \n" %(disc.time, theta*180/np.pi, theta2*180/np.pi, theta3*180/np.pi))
         f.close()
 else:
     # just print results for the disc
