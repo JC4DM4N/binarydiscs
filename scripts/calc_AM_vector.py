@@ -28,7 +28,7 @@ AM = np.sum(np.cross(sep.T,momentum.T),axis=0)
 # want to print different things if we do or don't include the companion in our calculations
 if args.include_companion:
     ptmass_momentum = disc.ptmass_xyzmh[4,1]*disc.ptmass_vxyz[:,1]
-    ptmass_sep = disc.ptmass_xyzmh[:3,0] - disc.ptmass_xyzmh[:3,1]
+    ptmass_sep = disc.ptmass_xyzmh[:3,1] - disc.ptmass_xyzmh[:3,0]
     companion_AM = np.cross(ptmass_sep.T, ptmass_momentum.T)
     #angle between the two vectors
     theta = np.arccos(np.dot(AM, companion_AM.T)/(np.linalg.norm(AM)*np.linalg.norm(companion_AM)))
